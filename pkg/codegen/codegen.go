@@ -428,6 +428,10 @@ func GenerateTypeDefinitions(t *template.Template, swagger *openapi3.T, ops []Op
 			return "", fmt.Errorf("error generating Go types for component request bodies: %w", err)
 		}
 		allTypes = append(allTypes, bodyTypes...)
+
+		for _, typ := range allTypes {
+			allTypes = append(allTypes, typ.Schema.GetAdditionalTypeDefs()...)
+		}
 	}
 
 	// Go through all operations, and add their types to allTypes, so that we can
@@ -529,8 +533,6 @@ func GenerateTypesForSchemas(t *template.Template, schemas map[string]*openapi3.
 			TypeName: goTypeName,
 			Schema:   goSchema,
 		})
-
-		types = append(types, goSchema.GetAdditionalTypeDefs()...)
 	}
 	return types, nil
 }
